@@ -1,16 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from Petstagram23.common.views import apply_likes_count, apply_user_liked_photo
+from Petstagram23.pets.forms import PetCreateForm
 from Petstagram23.pets.utils import get_pet_by_name_and_username
 
 
 # Create your views here.
-def add_pet(request):
-    return render(request, 'pets/pet-add-page.html')
-
-
-def delete_pet(request, username, pet_slug):
-    return render(request, 'pets/pet-delete-page.html')
 
 
 def details_pet(request, username, pet_slug):
@@ -31,6 +26,37 @@ def details_pet(request, username, pet_slug):
         context,
     )
 
+def add_pet(request):
+    if request.method == 'GET':
+        form = PetCreateForm()
+    else:
+        form = PetCreateForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('details user',pk=1) # Todo when auth fix
+
+    context = {
+        'form':PetCreateForm(),
+    }
+
+    return render(request,
+                  'pets/pet-add-page.html',
+                  context,)
 
 def edit_pet(request, username, pet_slug):
-    return render(request, 'pets/pet-edit-page.html')
+
+
+    return render(request,
+                  'pets/pet-edit-page.html'
+                  )
+
+
+def delete_pet(request, username, pet_slug):
+
+    return render(request,
+                  'pets/pet-delete-page.html'
+                  )
+
+
+
+

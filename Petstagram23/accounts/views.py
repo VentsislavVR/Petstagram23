@@ -19,7 +19,8 @@ def delete_user(request,pk):
 
 def details_user(request,pk):
 
-    return (render(request, 'accounts/profile-details-page.html'))
+    return (render(request,
+                   'accounts/profile-details-page.html'))
 
 
 def edit_user(request,pk):
