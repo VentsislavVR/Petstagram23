@@ -27,7 +27,7 @@ class Pet(StrFromFieldsMixin,models.Model):
         blank=True,
     )
 
-    date_of_birth = models.DateField(
+    date_oof_birth = models.DateField(
         null=True,
         blank=True,
     )

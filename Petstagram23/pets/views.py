@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 
 from Petstagram23.common.views import apply_likes_count, apply_user_liked_photo
-from Petstagram23.pets.forms import PetCreateForm
+from Petstagram23.pets.forms import PetCreateForm, PetEditForm, PetDeleteForm
+from Petstagram23.pets.models import Pet
 from Petstagram23.pets.utils import get_pet_by_name_and_username
 
 
@@ -36,7 +37,8 @@ def add_pet(request):
             return redirect('details user',pk=1) # Todo when auth fix
 
     context = {
-        'form':PetCreateForm(),
+        'form':form,
+
     }
 
     return render(request,
@@ -44,19 +46,54 @@ def add_pet(request):
                   context,)
 
 def edit_pet(request, username, pet_slug):
+    # Todo use username when auth
+    pet = Pet.objects.filter(slug=pet_slug).get()
 
+    if request.method == 'GET':
+        form = PetEditForm(instance=pet)
+    else:
+        form = PetEditForm(request.POST,instance=pet)
+        if form.is_valid():
+            form.save()
+            return redirect('details pet', username=username, pet_slug=pet_slug)
 
-    return render(request,
-                  'pets/pet-edit-page.html'
-                  )
+    context = {
+        'form': form,
+        'pet_slug': pet_slug,
+        'username': username,
+    }
+
+    return (render
+            (request,
+                  'pets/pet-edit-page.html',
+                  context
+            ))
 
 
 def delete_pet(request, username, pet_slug):
+    pet = (Pet.objects.filter(
+        slug=pet_slug)
+           .get())
 
-    return render(request,
-                  'pets/pet-delete-page.html'
-                  )
+    if request.method == 'GET':
+        form = PetDeleteForm(instance=pet)
+    else:
+        form = PetDeleteForm(request.POST, instance=pet)
+        if form.is_valid():
+            form.save()
+            return redirect('details user',  pk=1) # Todo when auth fix
 
+    context = {
+        'form': form,
+        'pet_slug': pet_slug,
+        'username': username,
+    }
+
+    return (render
+            (request,
+             'pets/pet-delete-page.html',
+             context
+             ))
 
 
 
