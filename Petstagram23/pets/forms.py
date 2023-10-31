@@ -46,9 +46,17 @@ class PetCreateForm(PetBaseForm):
 class PetEditForm(PetBaseForm):
     ...
 
+
 class PetDeleteForm(DisabledFormMixin, PetBaseForm):
     disabled_fields = ('name', 'date_oof_birth', 'personal_photo')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._disable_fields()
+
+    def save(self, commit=True):
+        if commit:
+            self.instance.delete()
+        else:
+            pass
+        return self.instance
