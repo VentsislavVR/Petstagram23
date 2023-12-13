@@ -11,22 +11,22 @@
                 <div class="image">
 
                     <!-- Profile Image -->
-                    <img src="{% static 'images/person.png' %}" alt="img8">
+                    <img src="{{ profile_image }}" alt="img8">
                 </div>
             </div>
             <div class="personal">
                 <div class="edit">
                     <!-- User Username -->
-                    <p>d_kalaydzhiev</p>
+                    <p>{{ object.username }}</p>
 
                     <!-- IF the viewer is the owner of the profile -->
                     <!-- Link to Edit Profile Page -->
-                    <a href="{% url 'edit user' pk=1%}">
+                    <a href="{% url 'edit user' pk=object.pk%}">
                         <img class="edit-img" src="{% static 'images/edit-pen-icon-6.jpg' %}" alt="edit button">
                     </a>
 
                     <!-- Link to Delete Profile Page -->
-                    <a href="">
+                    <a href="{% url 'delete user' pk=object.pk %}">
                         <img class="bin-img" src="{% static 'images/icon-remove-22.jpg' %}" alt="bin button">
                     </a>
                     <!-- End IF the viewer is the owner of the profile -->
@@ -46,14 +46,24 @@
                     <span>436</span>
                     <p>likes</p>
                 </div>
+
                 <!-- User First and Last Name IF Added -->
-                <h3 class="names">Diyan Kalaydziev</h3>
+                <h3 class="names">
+                    {% if object.full_name is not None %}
+                    {{ object.full_name }}
+                    {% else %}
+                    Empty
+                    {% endif %}
+                </h3>
 
                 <!-- User Email Address -->
-                <p class="email">d.denov@gmail.com</p>
+                <p class="email">{{ object.email }}</p>
 
                 <!-- User Gender IF Added -->
-                <p class="gender">Male</p>
+                <p class="gender">
+
+                    {{ object.gender }}
+                </p>
             </div>
         </div>
         <!-- End Profile Personal Data Section -->

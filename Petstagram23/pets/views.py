@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from Petstagram23.common.views import apply_likes_count, apply_user_liked_photo
@@ -7,26 +8,27 @@ from Petstagram23.pets.utils import get_pet_by_name_and_username
 
 
 # Create your views here.
-
-
+@login_required
 def details_pet(request, username, pet_slug):
-    pet = get_pet_by_name_and_username(pet_slug,username)
+    pet = get_pet_by_name_and_username(pet_slug, username)
 
     photos = [apply_likes_count(photo) for photo in pet.photo_set.all()]
     photos = [apply_user_liked_photo(photo) for photo in photos]
 
     context = {
-        'pet':pet,
-        'photos_count':pet.photo_set.count(),
-        'pet_photos':photos,
+        'pet': pet,
+        'photos_count': pet.photo_set.count(),
+        'pet_photos': photos,
     }
 
     return render(
         request,
-    'pets/pet-details-page.html',
+        'pets/pet-details-page.html',
         context,
     )
 
+
+@login_required
 def add_pet(request):
     if request.method == 'GET':
         form = PetCreateForm()
@@ -34,17 +36,19 @@ def add_pet(request):
         form = PetCreateForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('details user',pk=1) # Todo when auth fix
+            return redirect('details user', pk=1)  # Todo when auth fix
 
     context = {
-        'form':form,
+        'form': form,
 
     }
 
     return render(request,
                   'pets/pet-add-page.html',
-                  context,)
+                  context, )
 
+
+@login_required
 def edit_pet(request, username, pet_slug):
     # Todo use username when auth
     pet = Pet.objects.filter(slug=pet_slug).get()
@@ -52,7 +56,7 @@ def edit_pet(request, username, pet_slug):
     if request.method == 'GET':
         form = PetEditForm(instance=pet)
     else:
-        form = PetEditForm(request.POST,instance=pet)
+        form = PetEditForm(request.POST, instance=pet)
         if form.is_valid():
             form.save()
             return redirect('details pet', username=username, pet_slug=pet_slug)
@@ -65,11 +69,12 @@ def edit_pet(request, username, pet_slug):
 
     return (render
             (request,
-                  'pets/pet-edit-page.html',
-                  context
-            ))
+             'pets/pet-edit-page.html',
+             context
+             ))
 
 
+@login_required
 def delete_pet(request, username, pet_slug):
     pet = (Pet.objects.filter(
         slug=pet_slug)
@@ -81,7 +86,7 @@ def delete_pet(request, username, pet_slug):
         form = PetDeleteForm(request.POST, instance=pet)
         if form.is_valid():
             form.save()
-            return redirect('details user',  pk=1) # Todo when auth fix
+            return redirect('details user', pk=1)  # Todo when auth fix
 
     context = {
         'form': form,
@@ -94,6 +99,3 @@ def delete_pet(request, username, pet_slug):
              'pets/pet-delete-page.html',
              context
              ))
-
-
-

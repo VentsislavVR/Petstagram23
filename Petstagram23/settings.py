@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 
+from django.urls import reverse_lazy
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -86,7 +88,7 @@ WSGI_APPLICATION = 'Petstagram23.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "petstagram23_db",
+        "NAME": "petstagram23_db3",
         "USER": "postgres-user",
         "PASSWORD": "password",
         "HOST": "127.0.0.1",
@@ -111,7 +113,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
+if DEBUG:
+    AUTH_PASSWORD_VALIDATORS = []
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -139,3 +142,8 @@ MEDIA_ROOT = BASE_DIR / 'mediafiles'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'accounts.PetstagramUser'
+
+LOGIN_REDIRECT_URL = reverse_lazy('index')
+LOGOUT_REDIRECT_URL = reverse_lazy('index')

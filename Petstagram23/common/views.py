@@ -1,4 +1,5 @@
 import pyperclip
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, resolve_url
 from django.urls import reverse
 from pyperclip import copy
@@ -25,7 +26,6 @@ def index(request):
     photos = [apply_likes_count(photo) for photo in photos]
     photos = [apply_user_liked_photo(photo) for photo in photos]
 
-
     context = {
         'photos': photos,
         'comment_form': PhotoCommentForm(),
@@ -35,10 +35,7 @@ def index(request):
                   'common/home-page.html',
                   context, )
 
-
-
-
-
+@login_required
 def like_photo(request, photo_id):
     user_liked_photos = get_user_liked_photos(photo_id)
 
@@ -49,18 +46,20 @@ def like_photo(request, photo_id):
         PhotoLike.objects.create(
             photo_id=photo_id)
     redirect_path = request.META['HTTP_REFERER'] + f'#photo-{photo_id}'
-    return redirect(get_photo_url(request,photo_id))
+    return redirect(get_photo_url(request, photo_id))
 
-def share_photo(request,photo_id):
-    photo_details_url =\
+@login_required
+def share_photo(request, photo_id):
+    photo_details_url = \
         reverse('details photo',
-                kwargs={'pk':photo_id
-    })
+                kwargs={'pk': photo_id
+                        })
 
     pyperclip.copy(photo_details_url)
-    return redirect(get_photo_url(request,photo_id))
+    return redirect(get_photo_url(request, photo_id))
 
-def comment_photo(request,photo_id):
+@login_required
+def comment_photo(request, photo_id):
     photo = Photo.objects.filter(pk=photo_id).get()
 
     form = PhotoCommentForm(request.POST)

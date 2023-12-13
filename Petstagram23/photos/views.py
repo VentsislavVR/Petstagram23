@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
@@ -8,7 +9,7 @@ from Petstagram23.photos.models import Photo
 
 
 # Create your views here.
-
+@login_required
 def details_photo(request, pk):
     photo = Photo.objects.filter(pk=pk).get()
 
@@ -38,8 +39,7 @@ def get_post_photo_form(request, form, success_url, template_path, pk=None):
     return render(request,
                   template_path,
                   context)
-
-
+@login_required
 def add_photo(request):
     if request.method == 'GET':
         form = PhotoCreateForm()
@@ -58,7 +58,7 @@ def add_photo(request):
                   context
                   )
 
-
+@login_required
 def edit_photo(request, pk):
     photo = Photo.objects.filter(pk=pk).get()
 
@@ -72,7 +72,7 @@ def edit_photo(request, pk):
 
 
 # return render(request, 'photos/photo-edit-page.html')
-
+@login_required
 def delete_photo(request, pk):
     photo = Photo.objects.filter(pk=pk).get()
 
