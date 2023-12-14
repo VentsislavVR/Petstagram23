@@ -9,15 +9,16 @@
 
             <!-- Start Login Form-->
             <form action="{% url 'login user' %}" method="post">
-               {{ form.username|placeholder:'Enter username'|form_field_class:'form-username' }}
-                {{ form.password|placeholder:'Enter password' }}
+                {{ form.username|placeholder:'Enter username:'|form_field_class:'form-username' }}
+                {{ form.password|placeholder:'Enter password:' }}
+
                 <input type="hidden" value="{{ next }}" name="next"/>
+
                 {% csrf_token %}
-                <!-- Login Button-->
+
                 <button type="submit">Log in</button>
-
-
             </form>
+
             <!-- End Login Form -->
 
         </div>
@@ -27,5 +28,5 @@
             <p>Don't have account? <a href="{% url 'register user' %}?next={{ next }}">Register</a></p>
         </div>
     </div>
-    <!-- End Login Section-->
+{#    <!-- End Login Section-->#}
 {% endblock %}

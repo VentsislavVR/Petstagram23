@@ -24,7 +24,7 @@ class ChoicesStringMixin(ChoicesMixin):
 class Gender(ChoicesStringMixin,Enum):
     MALE = 'male'
     FEMALE = 'female'
-    DO_NOT_SHOW = 'd0 not show'
+    DO_NOT_SHOW = 'do not show'
 
 
 class PetstagramUser(auth_models.AbstractUser):

@@ -16,6 +16,7 @@ class OnlyAnonymousMixin:
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             return HttpResponse(self.get_success_url())
+
         return super().dispatch(request, *args, **kwargs)
 
 
@@ -26,23 +27,26 @@ class RegisterUserView(OnlyAnonymousMixin, views.CreateView):
 
     def form_valid(self, form):
         result = super().form_valid(form)
+
         login(self.request, self.object)
         # same as
         # user = self.object
         # login(self,request,user)
         return result
 
+    def form_invalid(self, form):
+        return super().form_invalid(form)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         context['next'] = self.request.GET.get('next', '')
+
         return context
+
 
     def get_success_url(self):
         return self.request.POST.get('next', self.success_url)
-
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
 
 
 class LoginUserView(auth_views.LoginView):
@@ -62,19 +66,33 @@ class ProfileDetailView(views.DetailView):
     # To work provide either model ,query or get_queryset
     model = UserModel
 
-    def get_context_data(self, **kwargs):
-        profile_image = static('images/person.png')
-        if self.object.profile_picture is not None:
-            profile_image = self.object.profile_picture
+    profile_image = static('images/person.png')
 
+    def get_profile_image(self):
+        if self.object.profile_picture is not None:
+            return self.object.profile_picture
+        return self.profile_image
+
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context['profile_image'] = profile_image
+        context['profile_image'] = self.get_profile_image()
+        # context['pets'] = self.request.user.pet_set.all()
 
         return context
-    # queryset =
-    # def get_queryset(self):
-    #     ...
+
+    # `UserModel.objects.all()` returns `queryset`
+    # To work provide either `model`, `queryset` or `get_queryset`
+
+
+# def profile_details(request, pk):
+#     pets = Pet.objects.all()
+#
+#     context = {
+#         "pets": pets,
+#     }
+#
+#     return render(request, 'accounts/profile-details-page.html', context=context)
 
 
 class ProfileEditView(views.UpdateView):
