@@ -4,7 +4,7 @@ from django.urls import reverse
 
 from Petstagram23.common.utils import get_user_liked_photos
 from Petstagram23.photos.forms import PhotoCreateForm, PhotoEditForm, PhotoDeleteForm
-
+from django.views import generic as views
 from Petstagram23.photos.models import Photo
 
 
@@ -39,24 +39,53 @@ def get_post_photo_form(request, form, success_url, template_path, pk=None):
     return render(request,
                   template_path,
                   context)
-@login_required
-def add_photo(request):
-    if request.method == 'GET':
-        form = PhotoCreateForm()
-    else:
-        form = PhotoCreateForm(request.POST, request.FILES)
-        if form.is_valid():
-            photo = form.save()  # form.save() returns the object saved
-            return redirect('details photo', pk=photo.pk)
 
-    context = {
-        'form': form,
-    }
 
-    return render(request,
-                  'photos/photo-add-page.html',
-                  context
-                  )
+class PhotoAddView(views.CreateView):
+    form_class = PhotoCreateForm
+    template_name = 'photos/photo-add-page.html'
+
+    def get_success_url(self):
+        return reverse('details photo', kwargs={
+            'pk': self.object.pk
+        }
+                       )
+
+    # def get_form(self, *args, **kwargs):
+    #     form = super().get_form(*args,**kwargs)
+    #     form.user = self.request.user
+    #     return form
+
+    # def form_valid(self, form):
+    #     self.object = form.save(commit=False)
+    #     self.object.user = self.request.user
+    #     self.object.save()
+    #     return super().form_valid(form)
+    def get_form(self, *args, **kwargs):
+        form = super().get_form(*args, **kwargs)
+        form.instance.user = self.request.user
+        return form
+
+
+
+# @login_required
+# def add_photo(request):
+#     if request.method == 'GET':
+#         form = PhotoCreateForm()
+#     else:
+#         form = PhotoCreateForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             photo = form.save()  # form.save() returns the object saved
+#             return redirect('details photo', pk=photo.pk)
+#
+#     context = {
+#         'form': form,
+#     }
+#
+#     return render(request,
+#                   'photos/photo-add-page.html',
+#                   context
+#                   )
 
 @login_required
 def edit_photo(request, pk):

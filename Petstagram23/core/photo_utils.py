@@ -4,8 +4,8 @@ def apply_likes_count(photo):
     return photo
 
 
-def apply_user_liked_photo(photo):
-    # TODO fix when auth is available
-    photo.is_liked_by_user = photo.likes_count > 0
+def apply_user_liked_photo(photo,user):
+    p
+    photo.is_liked_by_user = user.is_authenticated and user in photo.photolike_set.all()
     return photo
 

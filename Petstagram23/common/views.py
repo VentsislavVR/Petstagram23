@@ -1,12 +1,13 @@
 import pyperclip
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect, resolve_url
+from django.shortcuts import render, redirect
 from django.urls import reverse
-from pyperclip import copy
+
 
 from Petstagram23.common.forms import PhotoCommentForm, SearchPhotoForm
 from Petstagram23.common.models import PhotoLike
-from Petstagram23.common.utils import get_user_liked_photos, get_photo_url
+from Petstagram23.common.utils import get_photo_url
+
 from Petstagram23.core.photo_utils import apply_likes_count, apply_user_liked_photo
 from Petstagram23.photos.models import Photo
 
@@ -22,9 +23,9 @@ def index(request):
     photos = Photo.objects.all()
     if search_pattern:
         photos = photos.filter(tagged_pets__name__icontains=search_pattern)
-
+    user = request.user
     photos = [apply_likes_count(photo) for photo in photos]
-    photos = [apply_user_liked_photo(photo) for photo in photos]
+    photos = [apply_user_liked_photo(photo,user) for photo in photos]
 
     context = {
         'photos': photos,
@@ -37,15 +38,24 @@ def index(request):
 
 @login_required
 def like_photo(request, photo_id):
-    user_liked_photos = get_user_liked_photos(photo_id)
+    photo = Photo.objects.get(pk=photo_id)
 
-    if user_liked_photos:
-        user_liked_photos.delete()
+    kwargs = {
+        'photo': photo,
+        'user': request.user }
 
+    like_object = (PhotoLike.objects
+                   .filter(**kwargs)
+                   .first())
+    # user_liked_photos = get_user_liked_photos(photo_id)
+
+    if like_object:
+        like_object.delete()
     else:
-        PhotoLike.objects.create(
-            photo_id=photo_id)
-    redirect_path = request.META['HTTP_REFERER'] + f'#photo-{photo_id}'
+        new_like_obj = PhotoLike(**kwargs)
+        new_like_obj.save()
+
+    # redirect_path = request.META['HTTP_REFERER'] + f'#photo-{photo_id}'
     return redirect(get_photo_url(request, photo_id))
 
 @login_required

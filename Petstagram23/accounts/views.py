@@ -1,10 +1,8 @@
-from django.http import request, HttpResponse
-from django.shortcuts import render
+from django.http import HttpResponse
 from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.views import generic as views
 from django.contrib.auth import views as auth_views, login, get_user_model
-from django.contrib.auth import mixins as auth_mixins
 
 from Petstagram23.accounts.forms import RegisterUserForm, LoginUserForm
 
@@ -44,7 +42,6 @@ class RegisterUserView(OnlyAnonymousMixin, views.CreateView):
 
         return context
 
-
     def get_success_url(self):
         return self.request.POST.get('next', self.success_url)
 
@@ -74,10 +71,11 @@ class ProfileDetailView(views.DetailView):
         return self.profile_image
 
     def get_context_data(self, **kwargs):
+
         context = super().get_context_data(**kwargs)
 
         context['profile_image'] = self.get_profile_image()
-        # context['pets'] = self.request.user.pet_set.all()
+        context['pets'] = self.request.user.pet_set.all()
 
         return context
 

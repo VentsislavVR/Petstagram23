@@ -18,7 +18,7 @@ class ChoicesMixin:
 class ChoicesStringMixin(ChoicesMixin):
     @classmethod
     def max_length(cls):
-        return max(len(x.value) for x in cls)
+        return max(len(x.value) for x in cls) + 1
 
 
 class Gender(ChoicesStringMixin,Enum):
@@ -55,7 +55,7 @@ class PetstagramUser(auth_models.AbstractUser):
     gender = models.CharField(
         choices=Gender.choices(),
         max_length=Gender.max_length(),
-        default=Gender.DO_NOT_SHOW,
+        default=Gender.DO_NOT_SHOW.value,
 
     )
 

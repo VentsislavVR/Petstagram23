@@ -35,7 +35,9 @@ def add_pet(request):
     else:
         form = PetCreateForm(request.POST)
         if form.is_valid():
-            form.save()
+            pet = form.save(commit=False)
+            pet.user = request.user
+            pet.save()
             return redirect('details user', pk=1)  # Todo when auth fix
 
     context = {
