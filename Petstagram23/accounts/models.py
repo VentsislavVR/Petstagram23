@@ -21,7 +21,7 @@ class ChoicesStringMixin(ChoicesMixin):
         return max(len(x.value) for x in cls) + 1
 
 
-class Gender(ChoicesStringMixin,Enum):
+class Gender(ChoicesStringMixin, Enum):
     MALE = 'male'
     FEMALE = 'female'
     DO_NOT_SHOW = 'do not show'
@@ -69,3 +69,9 @@ class PetstagramUser(auth_models.AbstractUser):
         if self.first_name or self.last_name:
             return f'{self.first_name} {self.last_name}'
         return None
+
+    def save(self, *args, **kwargs):
+        result = super().save(*args, **kwargs)
+        # Send mail on successful registration : Variant 2
+        # Good enough, but there is a better option (signals)
+        return result

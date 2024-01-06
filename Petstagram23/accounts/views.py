@@ -27,6 +27,9 @@ class RegisterUserView(OnlyAnonymousMixin, views.CreateView):
         result = super().form_valid(form)
 
         login(self.request, self.object)
+        # Variant 1 Send mail only when registered from website
+        # not from admin
+        # send_mail ....
         # same as
         # user = self.object
         # login(self,request,user)
