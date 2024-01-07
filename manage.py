@@ -1,8 +1,24 @@
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
 import os
+import re
 import sys
 
+from django.core.management import execute_from_command_line
+
+
+def load_env():
+    try:
+        with open('./env/.env') as f:
+            content = f.read()
+    except IOError:
+        content = ''
+
+    for line in content.splitlines():
+        m = re.match(r'\A([A-Za-z_0-9]+)=(.*)\Z', line)
+        if m:
+            key, value = m.group(1), m.group(2)
+            os.environ.setdefault(key, value)
 
 def main():
     """Run administrative tasks."""
@@ -19,4 +35,5 @@ def main():
 
 
 if __name__ == '__main__':
+    load_env()
     main()
